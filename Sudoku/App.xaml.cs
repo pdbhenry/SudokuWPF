@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 
-namespace HelloWPF
+namespace Sudoku
 {
     /// <summary>
     /// Interaction logic for App.xaml
