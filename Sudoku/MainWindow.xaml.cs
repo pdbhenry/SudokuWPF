@@ -1,26 +1,19 @@
-﻿using System.Text;
+﻿using Sudoku;
+using Sudoku.MVVM;
+using System.Collections.ObjectModel;
+using Sudoku.ViewModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Sudoku
 {
     public partial class MainWindow : Window
     {
+        
         public MainWindow()
         {
             InitializeComponent();
-        }
-
-        private void startBtn_Click(object sender, RoutedEventArgs e)
-        {
-
+            MainWindowViewModel vm = new MainWindowViewModel(lst);
+            DataContext = vm;
         }
     }
 }

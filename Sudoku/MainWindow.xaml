@@ -8,7 +8,7 @@
         Title="Sudoku" Height="450" Width="800">
     <Window.Resources>
         <DataTemplate x:Key="DataTemplate_Level2">
-            <Button Content="{Binding}" Height="40" Width="50" Margin="4,4,4,4"/>
+            <Button Content="{Binding}" Style="{StaticResource BoardButton}"/>
         </DataTemplate>
 
         <DataTemplate x:Key="DataTemplate_Level1">
@@ -30,7 +30,7 @@
 
         <!-- Header -->
         <Rectangle Grid.Row="0" Fill="DarkOliveGreen" />
-        <TextBlock Name="title" Text="Sudoku" FontSize="40" FontFamily="Verdana" VerticalAlignment="Top" HorizontalAlignment="Center" Foreground="White"/>
+        <TextBlock Name="title" Text="Sudoku" FontSize="40" Style="{StaticResource MenuButton}"/>
         <!-- Content -->
         <Rectangle Grid.Row="1" Fill="Wheat" />
 
@@ -40,25 +40,19 @@
                 <ColumnDefinition Width=".2*"/>
             </Grid.ColumnDefinitions>
 
-            <Button Name="startBtn" VerticalAlignment="Center" Command="{Binding GenerateCommand}">
+            <Button Grid.Column="1" Name="startBtn" VerticalAlignment="Center">
                 <Button.Content>
                     <Grid>
-                        <TextBlock Text="Generate"></TextBlock>
+                        <TextBlock Text="Generate" Style="{StaticResource MenuButton}"></TextBlock>
                     </Grid>
                 </Button.Content>
             </Button>
 
-            <Viewbox Stretch="Uniform" StretchDirection="Both">
-                <Border BorderBrush="Black" BorderThickness=".002" Margin=".04">
-                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width=".5" Height=".5" 
-                      Background="White">
-                        
-                        <ItemsControl 
-                            x:Name="lst" 
-                            ItemTemplate="{DynamicResource DataTemplate_Level1}"/>
-                    </Grid>
-                </Border>
-            </Viewbox>
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="306" Height="306" 
+            Background="White">
+                <ItemsControl x:Name="lst" ItemTemplate="{DynamicResource DataTemplate_Level1}"/>
+            </Grid>
+            
         </Grid>
     </Grid>
 </Window>

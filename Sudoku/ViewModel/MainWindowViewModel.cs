@@ -1,57 +1,48 @@
 ﻿using Sudoku.Model;
 using Sudoku.MVVM;
 using System.Collections.ObjectModel;
-using System.Windows.Documents.DocumentStructures;
-
+using System.Diagnostics;
+using Sudoku;
+using System.Windows.Controls;
 
 namespace Sudoku.ViewModel
 {
     internal class MainWindowViewModel : ViewModelBase
     {
-        //public ObservableCollection<Cell> Cells { get; set; }
-        public List<List<Cell>> numsList;
+        public ObservableCollection<Cell> Cells { get; set; }
+        private BoardControl boardControl;
+        //public List<List<Cell>> numsList;
+        //public RelayCommand GenerateCommand => new RelayCommand(execute => GenerateBoard());
 
-        public RelayCommand GenerateCommand => new RelayCommand(execute => GenerateBoard());
-
-        public MainWindowViewModel() 
+        public MainWindowViewModel(ItemsControl lst) 
         {
-            numsList = new List<List<Cell>>();
+            boardControl = new BoardControl();
+            //List<List<int>> lsts = board.GenerateBoard();
+            List<List<int>> lsts = new List<List<int>>(); 
 
             for (int i = 0; i < 9; i++)
             {
-                numsList.Add(new List<Cell>());
+                lsts.Add(new List<int>());
 
                 for (int j = 0; j < 9; j++)
                 {
-                    numsList[i].Add(new Cell(i * 10 + j, true));
+                    lsts[i].Add(i * 10 + j);
                 }
             }
 
-            //lst.ItemsSource = numsList; 
-
-            
+            lst.ItemsSource = boardControl.GenerateBoard();
         }
 
-        private Cell selectedCell;
+        private Cell selectedCell;  
+
         public Cell SelectedCell
         {
-            get { return SelectedCell; }
+            get { return selectedCell; }
             set 
-            { 
-                SelectedCell = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private void GenerateBoard()
-        {
-            //Temporary code
-            for (int i = 0; i < 9; i++)
             {
-                for (int j = 0; j < 9; j++)
-                {
-                    numsList[i][j] = new Cell(1, true);
-                }
+                Debug.Print(value.Value.ToString());
+                selectedCell = value;
+                OnPropertyChanged();
             }
         }
     }

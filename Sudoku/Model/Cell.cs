@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-
+﻿
 namespace Sudoku.Model
 {
     internal class Cell
@@ -12,10 +6,12 @@ namespace Sudoku.Model
         //public Button Button { get; set; }
         public int Value { get; set; }
         public bool Fixed { get; set; }  
-        
-        public Cell(int val, bool fixd) { 
-            Value = val;
-            Fixed = fixd;            
+        public int rowInd { get; set; }
+        public int colInd { get; set; }
+
+        public Cell(int row, int col) { 
+            rowInd = row;
+            colInd = col;
         }
     }
 }
