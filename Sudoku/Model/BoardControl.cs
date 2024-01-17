@@ -3,10 +3,9 @@ namespace Sudoku.Model
 {
     class BoardControl
     {
-        public List<int> blankRow = new List<int>() { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         public List<int> numLst = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
         public List<List<int>> blankBoard = new List<List<int>>();
-        public Cell emptyCell;
+        //public Cell emptyCell;
         private int counter;
 
 
@@ -15,7 +14,7 @@ namespace Sudoku.Model
             //Make a 9x9 board of 0s
             for (int i = 0; i < 9; i++)
             {
-                blankBoard.Add(blankRow);
+                blankBoard.Add(new List<int>() { 0, 0, 0, 0, 0, 0, 0, 0, 0 });
             }
 
         }
@@ -24,7 +23,9 @@ namespace Sudoku.Model
         {
             List<List<int>> board = blankBoard;
             counter = 0;
-            return FillBoard(board);
+            FillBoard(board);
+
+            return board;
         }
 
         public List<int> ShuffleList(Random rng)
@@ -50,7 +51,12 @@ namespace Sudoku.Model
 
         public Boolean RowSafe(List<List<int>> currBoard, Cell emptyCell, int num)
         {
-            return !currBoard[emptyCell.rowInd].Contains(num);
+            if (!currBoard[emptyCell.rowInd].Contains(num))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public Boolean ColSafe(List<List<int>> currBoard, Cell emptyCell, int num)
@@ -68,13 +74,13 @@ namespace Sudoku.Model
         public Boolean QuadSafe(List<List<int>> currBoard, Cell emptyCell, int num)
         {
             int tlRow = emptyCell.rowInd - (emptyCell.rowInd % 3);
-            int tlCol = emptyCell.colInd - (emptyCell.colInd & 3);
+            int tlCol = emptyCell.colInd - (emptyCell.colInd % 3);
 
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    if (currBoard[i][j] == num)
+                    if (currBoard[tlRow + i][tlCol+ j] == num)
                         return false;
                 }
             }
@@ -82,9 +88,9 @@ namespace Sudoku.Model
             return true;
         }
 
-        public Boolean FindEmptyCell(List<List<int>> currBoard)
+        public Cell FindEmptyCell(List<List<int>> currBoard)
         {
-            emptyCell = new Cell(-1, -1);
+            Cell emptyCell = new Cell(-1, -1);
             int currRow = 0;
 
             foreach (List<int> row in currBoard)
@@ -94,21 +100,27 @@ namespace Sudoku.Model
                 {
                     emptyCell.rowInd = currRow;
                     emptyCell.colInd = ind;
-                    return true;
+                    return emptyCell;
                 }
 
                 currRow++;
             }
 
-            return false;
+            return null;
         }
 
-        public List<List<int>> FillBoard(List<List<int>> currBoard)
+        public Boolean FillBoard(List<List<int>> currBoard)
         {
-            if (!FindEmptyCell(currBoard)) return currBoard;
-            var rng = new Random();
+            Cell emptyCell = FindEmptyCell(currBoard);
+            if (emptyCell == null)
+            {
+                return true;
+            }
 
-            foreach (int num in ShuffleList(rng))
+            var rng = new Random();
+            List<int> shuffleNums = ShuffleList(rng);
+
+            foreach (int num in shuffleNums.ToList())
             {
                 counter++;
                 if (counter > 20000000) throw new Exception ("Recursion Timeout");
@@ -117,13 +129,16 @@ namespace Sudoku.Model
                 {
                     currBoard[emptyCell.rowInd][emptyCell.colInd] = num;
 
-                    if (FillBoard(currBoard) != null) return currBoard;
+                    if (FillBoard(currBoard))
+                    {
+                        return true;
+                    }
 
                     currBoard[emptyCell.rowInd][emptyCell.colInd] = 0;
                 }
             }
 
-            return null;
+            return false;
         }
     }
 }
