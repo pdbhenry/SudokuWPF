@@ -140,5 +140,60 @@ namespace Sudoku.Model
 
             return false;
         }
+
+        public Boolean MultipleSolutions(List<List<int>> currBoard) 
+        {
+            List<int> solutions = new List<int>();
+            List<Cell> emptyCells = EmptyCells(currBoard);
+
+            for (int i = 0; i < emptyCells.Count; i++)
+            {
+                List<Cell> emptyCells2 = new List<Cell>(emptyCells);
+                Cell startingPoint = emptyCells2[i];
+                emptyCells2.RemoveAt(i);
+                emptyCells2.Insert(0, startingPoint);
+                List<List<int>> solution = TestSolution(currBoard, emptyCells2);
+                string combinedString = string.Join(",", currBoard[0]);
+            }
+            return false;
+        }
+
+        public List<List<int>> TestSolution(List<List<int>> currBoard, List<Cell> emptyCells)
+        {
+            Cell emptyCell = StillEmptyCell(currBoard, emptyCells);
+            if (emptyCell == null) return currBoard;
+            var rng = new Random();
+            List<int> shuffleNums = ShuffleList(rng);
+
+            return null;
+        }
+
+        public Cell StillEmptyCell(List<List<int>> currBoard, List<Cell> emptyCells)
+        {
+            foreach (Cell emptyCell in emptyCells) 
+            {
+                if (currBoard[emptyCell.rowInd][emptyCell.colInd] == 0) return emptyCell;
+            }
+
+            return null;
+        }
+
+        public List<Cell> EmptyCells(List<List<int>> currBoard)
+        {
+            List<Cell> emptyCells = new List<Cell>();
+
+            for (int i =  0; i < currBoard.Count; i++)
+            {
+                for (int j = 0; j < currBoard[i].Count; j++)
+                {
+                    if (currBoard[i][j] == 0)
+                    {
+                        emptyCells.Add(new Cell(i, j));
+                    }
+                }
+            }
+
+            return emptyCells;
+        }
     }
 }
