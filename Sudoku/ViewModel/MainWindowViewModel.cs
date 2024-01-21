@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Sudoku;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Sudoku.ViewModel
 {
@@ -40,10 +41,12 @@ namespace Sudoku.ViewModel
             get { return selectedCell; }
             set 
             {
-                Debug.Print(value.Value.ToString());
+                Debug.Print(value.value.ToString());
                 selectedCell = value;
                 OnPropertyChanged();
             }
         }
+
+        
     }
 }

@@ -40,7 +40,8 @@
                 <ColumnDefinition Width=".2*"/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="1" Name="startBtn" VerticalAlignment="Center">
+            <Button Grid.Column="1" Name="startBtn" VerticalAlignment="Center"
+                    Command="{Binding GenerateCommand}">
                 <Button.Content>
                     <Grid>
                         <TextBlock Text="Generate" Style="{StaticResource MenuButton}"></TextBlock>
