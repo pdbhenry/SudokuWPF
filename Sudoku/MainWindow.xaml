@@ -6,13 +6,14 @@
         xmlns:local="clr-namespace:Sudoku"
         mc:Ignorable="d"
         Title="Sudoku" Height="450" Width="800">
+    
     <Window.Resources>
         <DataTemplate x:Key="DataTemplate_Level2">
             <Button Content="{Binding}" Style="{StaticResource BoardButton}"/>
         </DataTemplate>
 
         <DataTemplate x:Key="DataTemplate_Level1">
-            <ItemsControl ItemsSource="{Binding}" ItemTemplate="{DynamicResource DataTemplate_Level2}">
+            <ItemsControl ItemsSource="{Binding }" ItemTemplate="{DynamicResource DataTemplate_Level2}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal"/>
@@ -31,6 +32,7 @@
         <!-- Header -->
         <Rectangle Grid.Row="0" Fill="DarkOliveGreen" />
         <TextBlock Name="title" Text="Sudoku" FontSize="40" Style="{StaticResource MenuButton}"/>
+        
         <!-- Content -->
         <Rectangle Grid.Row="1" Fill="Wheat" />
 
@@ -41,7 +43,7 @@
             </Grid.ColumnDefinitions>
 
             <Button Grid.Column="1" Name="startBtn" VerticalAlignment="Center"
-                    Command="{Binding GenerateCommand}">
+                    Command="{Binding generateCommand}">
                 <Button.Content>
                     <Grid>
                         <TextBlock Text="Generate" Style="{StaticResource MenuButton}"></TextBlock>
@@ -51,7 +53,9 @@
 
             <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="306" Height="306" 
             Background="White">
-                <ItemsControl x:Name="lst" ItemTemplate="{DynamicResource DataTemplate_Level1}"/>
+                <ItemsControl ItemsSource="{Binding BoardSource, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                    ItemTemplate="{DynamicResource DataTemplate_Level1}"/>
+                    <!--may not need update source trigger UpdateSourceTrigger=PropertyChanged} -->
             </Grid>
             
         </Grid>

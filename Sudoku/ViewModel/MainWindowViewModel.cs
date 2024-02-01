@@ -5,33 +5,33 @@ using System.Diagnostics;
 using Sudoku;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Sudoku.Commands;
 
 namespace Sudoku.ViewModel
 {
     internal class MainWindowViewModel : ViewModelBase
     {
-        public ObservableCollection<Cell> Cells { get; set; }
         private BoardControl boardControl;
-        //public List<List<Cell>> numsList;
-        //public RelayCommand GenerateCommand => new RelayCommand(execute => GenerateBoard());
+        public ICommand generateCommand { get; }
 
-        public MainWindowViewModel(ItemsControl lst) 
+        private ObservableCollection<ObservableCollection<int>> boardSource;
+        public ObservableCollection<ObservableCollection<int>> BoardSource
         {
-            boardControl = new BoardControl();
-            //List<List<int>> lsts = board.GenerateBoard();
-            List<List<int>> lsts = new List<List<int>>(); 
-
-            for (int i = 0; i < 9; i++)
+            get
             {
-                lsts.Add(new List<int>());
-
-                for (int j = 0; j < 9; j++)
-                {
-                    lsts[i].Add(i * 10 + j);
-                }
+                return boardSource;
             }
+            set
+            {
+                boardSource = value;
+                OnPropertyChanged(nameof(this.BoardSource));
+            }
+        }
 
-            lst.ItemsSource = boardControl.GenerateBoard();
+        public MainWindowViewModel(BoardControl boardControl) 
+        {
+            generateCommand = new GenerateCommand(this, boardControl);
+            BoardSource = boardControl.GenerateBoard();
         }
 
         private Cell selectedCell;  
@@ -47,6 +47,7 @@ namespace Sudoku.ViewModel
             }
         }
 
-        
+  
+
     }
 }

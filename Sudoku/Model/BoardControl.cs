@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Windows.Controls;
 
 namespace Sudoku.Model
@@ -8,31 +9,31 @@ namespace Sudoku.Model
     class BoardControl
     {
         public List<int> numLst = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-        public List<List<int>> blankBoard = new List<List<int>>();
-        //public Cell emptyCell;
-        private int counter;
+		private int holes = 40;
+		//public Cell emptyCell;
+		private int counter;
         private int deleteCounter;
 
         public BoardControl() 
         {
-            //Make a 9x9 board of 0s
-            for (int i = 0; i < 9; i++)
-            {
-                blankBoard.Add(new List<int>() { 0, 0, 0, 0, 0, 0, 0, 0, 0 });
-            }
-
         }
 
-        public List<List<int>> GenerateBoard()
+        public ObservableCollection<ObservableCollection<int>> GenerateBoard()
         {
-            List<List<int>> board = blankBoard;
-            counter = 0;
+            ObservableCollection<ObservableCollection<int>> board = new ObservableCollection<ObservableCollection<int>>();
+
+			//Make a 9x9 board of 0s
+			for (int i = 0; i < 9; i++)
+			{
+				board.Add(new ObservableCollection<int>() { 0, 0, 0, 0, 0, 0, 0, 0, 0 });
+			}
+
+			counter = 0;
             deleteCounter = 0;
             FillBoard(board);
 
             try
             {
-                FillBoard(board);
                 RemoveFromBoard(board);
                 return board;
             } catch (Exception)
@@ -58,7 +59,7 @@ namespace Sudoku.Model
 
         //Checks the current Sudoku board if num value exists in the same row,
         //column, and quadrant that emptyCell lies in.
-        public Boolean Safe(List<List<int>> currBoard, Cell emptyCell, int num)
+        public Boolean Safe(ObservableCollection<ObservableCollection<int>> currBoard, Cell emptyCell, int num)
         {
             return RowSafe(currBoard, emptyCell, num) && ColSafe(currBoard, emptyCell, num) && 
                 QuadSafe(currBoard, emptyCell, num);
@@ -66,7 +67,7 @@ namespace Sudoku.Model
 
         //Checks the current Sudoku board if num value exists in the same row
         //that emptyCell lies in.
-        public Boolean RowSafe(List<List<int>> currBoard, Cell emptyCell, int num)
+        public Boolean RowSafe(ObservableCollection<ObservableCollection<int>> currBoard, Cell emptyCell, int num)
         {
             if (!currBoard[emptyCell.rowInd].Contains(num))
             {
@@ -78,7 +79,7 @@ namespace Sudoku.Model
 
         //Checks the current Sudoku board if num value exists in the same column
         //that emptyCell lies in.
-        public Boolean ColSafe(List<List<int>> currBoard, Cell emptyCell, int num)
+        public Boolean ColSafe(ObservableCollection<ObservableCollection<int>> currBoard, Cell emptyCell, int num)
         {
             int col = emptyCell.colInd;
             for (int i = 0; i < 9; i++)
@@ -92,7 +93,7 @@ namespace Sudoku.Model
 
         //Checks the current Sudoku board if num value exists in the same quadrant
         //that emptyCell lies in.
-        public Boolean QuadSafe(List<List<int>> currBoard, Cell emptyCell, int num)
+        public Boolean QuadSafe(ObservableCollection<ObservableCollection<int>> currBoard, Cell emptyCell, int num)
         {
             int tlRow = emptyCell.rowInd - (emptyCell.rowInd % 3);
             int tlCol = emptyCell.colInd - (emptyCell.colInd % 3);
@@ -111,14 +112,14 @@ namespace Sudoku.Model
 
 
         //Returns the first empty cell within the current Sudoku board.
-        public Cell FindEmptyCell(List<List<int>> currBoard)
+        public Cell FindEmptyCell(ObservableCollection<ObservableCollection<int>> currBoard)
         {
             Cell emptyCell = new Cell(-1, -1);
             int currRow = 0;
 
-            foreach (List<int> row in currBoard)
+            foreach (ObservableCollection<int> row in currBoard)
             {
-                int ind = row.FindIndex(a => a == 0);
+                int ind = row.IndexOf(0);
                 if (ind != -1)
                 {
                     emptyCell.rowInd = currRow;
@@ -136,7 +137,7 @@ namespace Sudoku.Model
         //a Sudoku board. Each value is checked to be safe amongst its row, column and 
         //quadrant. If it isn't, the backtracking algorithm steps backward and tries 
         //different values in previous cells.
-        public Boolean FillBoard(List<List<int>> currBoard)
+        public Boolean FillBoard(ObservableCollection<ObservableCollection<int>> currBoard)
         {
             Cell emptyCell = FindEmptyCell(currBoard);
             if (emptyCell == null)
@@ -170,13 +171,12 @@ namespace Sudoku.Model
 
         //Removes random cells' values until a certain amount of 'holes' have been made.
         //Checks that only one solution is valid, or else backtracks on removed cells.
-        public Boolean RemoveFromBoard(List<List<int>> currBoard)
+        public Boolean RemoveFromBoard(ObservableCollection<ObservableCollection<int>> currBoard)
         {
-            int holes = 20;
             Random rng = new Random();
             Stack<Cell> removedVals = new Stack<Cell>();
             List<int> vals = ShuffleList(Enumerable.Range(0, 81).ToList(), rng);
-            int valsInd = vals.Count - 1;
+            int valsInd = vals.Count - 1; //Index of 
             while (removedVals.Count < holes)
             {
                 if (valsInd < 0) throw new Exception("Impossible Game");
@@ -191,9 +191,9 @@ namespace Sudoku.Model
 
                 currBoard[nextValRow][nextValCol] = 0;
 
-                List<List<int>> potentialBoard = CreateBoardCopy(currBoard);
+                ObservableCollection<ObservableCollection<int>> potentialBoard = CreateBoardCopy(currBoard);
 
-                if (MultipleSolutions(potentialBoard))//!FillBoard(potentialBoard))
+                if (MultipleSolutions(potentialBoard))
                 {
                     potentialBoard[nextValRow][nextValCol] = removedVals.Pop().value;
                 }
@@ -203,7 +203,7 @@ namespace Sudoku.Model
         }
 
 
-        public Boolean MultipleSolutions(List<List<int>> currBoard)
+        public Boolean MultipleSolutions(ObservableCollection<ObservableCollection<int>> currBoard)
         {
             String oneSolution = "";
             List<Cell> emptyCells = EmptyCells(currBoard);
@@ -214,10 +214,10 @@ namespace Sudoku.Model
                 Cell startingPoint = emptyCells2[i];
                 emptyCells2.RemoveAt(i);
                 emptyCells2.Insert(0, startingPoint);
-                List<List<int>> currBoardCopy = CreateBoardCopy(currBoard);
+                ObservableCollection<ObservableCollection<int>> currBoardCopy = CreateBoardCopy(currBoard);
                 String solutionStr = "";
 
-                foreach (List<int> row in TestSolution(currBoardCopy, emptyCells2))
+                foreach (ObservableCollection<int> row in TestSolution(currBoardCopy, emptyCells2))
                 {
                     solutionStr += String.Join(", ", row.ToArray());
                 }
@@ -235,7 +235,7 @@ namespace Sudoku.Model
         }
 
         //
-        public List<List<int>> TestSolution(List<List<int>> currBoard, List<Cell> emptyCells)
+        public ObservableCollection<ObservableCollection<int>> TestSolution(ObservableCollection<ObservableCollection<int>> currBoard, List<Cell> emptyCells)
         {
             Cell emptyCell = StillEmptyCell(currBoard, emptyCells);
             if (emptyCell == null) return currBoard;
@@ -261,7 +261,7 @@ namespace Sudoku.Model
 
         //Returns the first, still empty Cell amongst the previously collected list of
         //empty cells (emptyCells).
-        public Cell StillEmptyCell(List<List<int>> currBoard, List<Cell> emptyCells)
+        public Cell StillEmptyCell(ObservableCollection<ObservableCollection<int>> currBoard, List<Cell> emptyCells)
         {
             foreach (Cell emptyCell in emptyCells)
             {
@@ -272,7 +272,7 @@ namespace Sudoku.Model
         }
 
         //Returns a list of all empty cells in the current Sudoku board.
-        public List<Cell> EmptyCells(List<List<int>> currBoard)
+        public List<Cell> EmptyCells(ObservableCollection<ObservableCollection<int>> currBoard)
         {
             List<Cell> emptyCells = new List<Cell>();
 
@@ -290,12 +290,12 @@ namespace Sudoku.Model
             return emptyCells;
         }
 
-        public List<List<int>> CreateBoardCopy(List<List<int>> currBoard)
+        public ObservableCollection<ObservableCollection<int>> CreateBoardCopy(ObservableCollection<ObservableCollection<int>> currBoard)
         {
-            List<List<int>> boardCopy = new List<List<int>>();
+            ObservableCollection<ObservableCollection<int>> boardCopy = new ObservableCollection<ObservableCollection<int>>();
             for (int i = 0; i < currBoard.Count; i++)
             {
-                boardCopy.Add(new List<int>());
+                boardCopy.Add(new ObservableCollection<int>());
                 for (int j = 0; j < currBoard[i].Count; j++)
                 {
                     boardCopy[i].Add(currBoard[i][j]);
